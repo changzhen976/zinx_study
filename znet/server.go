@@ -13,6 +13,7 @@ type Server struct {
 	IPVersion string
 	IP        string
 	Port      int
+	Router    ziface.IRouter
 }
 
 // ============== 定义当前客户端链接的handle api ===========
@@ -54,7 +55,7 @@ func (s *Server) Start() {
 			}
 
 			//3.3 处理该新连接请求的 业务 方法， 此时应该有 handler 和 conn是绑定的
-			dealConn := NewConntion(conn, cid, CallBackToClient)
+			dealConn := NewConntion(conn, cid, s.Router)
 			cid++
 			fmt.Println("current cid :", cid)
 
@@ -77,6 +78,10 @@ func (s *Server) Serve() {
 	}
 }
 
+func (s *Server) AddRouter(router ziface.IRouter) {
+	s.Router = router
+}
+
 func NewServer(name string) ziface.IServer {
 	// func NewServer(name string) *Server {
 	s := &Server{
@@ -84,6 +89,7 @@ func NewServer(name string) ziface.IServer {
 		IPVersion: "tcp",
 		IP:        "0.0.0.0",
 		Port:      7777,
+		Router:    nil,
 	}
 	return s
 }
